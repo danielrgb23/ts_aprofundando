@@ -6,7 +6,5 @@ export class MensagemView extends View<string> {
         return `
             <p class="alert alert-info">${model}</p>
         `
-    }
-
-    
+    } 
 }
