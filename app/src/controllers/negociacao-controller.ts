@@ -2,6 +2,7 @@ import { domInjector } from '../decorators/dom-injector.js';
 import { inspect } from '../decorators/inspect.js';
 import { logarTempoExec } from '../decorators/logar-tempo-exec.js';
 import { DiasDaSemana } from '../enums/dias-da-semana.js';
+import { NegociacoesDoDia } from '../interfaces/negociacao-do-dia.js';
 import { Negociacao } from '../models/negociacao.js';
 import { Negociacoes } from '../models/negociacoes.js';
 import { MensagemView } from '../views/mensagem-view.js';
@@ -40,6 +41,26 @@ export class NegociacaoController {
         this.negociacoes.adiciona(negociacao);
         this.limparFormulario();
         this.atualizaView();
+    }
+
+    public importaDados(): void {
+        fetch('http://localhost:8080/dados')
+            .then(res => res.json())
+            .then((dados: NegociacoesDoDia[]) => {
+                return dados.map(dadosDeHohe => {
+                    return new Negociacao(
+                        new Date(),
+                        dadosDeHohe.vezes,
+                        dadosDeHohe.montante
+                    )
+                })
+            })
+            .then(negociacoesDeHoje => {
+                for (let negociacao of negociacoesDeHoje) {
+                    this.negociacoes.adiciona(negociacao);
+                }
+                this.negociacoesView.update(this.negociacoes)
+            })
     }
 
     private ehDiaUtil(data: Date) {
